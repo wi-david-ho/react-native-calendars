@@ -28,6 +28,7 @@
     "url": "git+https://github.com/wi-david-ho/react-native-calendars"
   },
   "publishConfig": {
+    "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
   "author": "Wix.com",
