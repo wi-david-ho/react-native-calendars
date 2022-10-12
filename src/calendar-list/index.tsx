@@ -349,6 +349,7 @@ class CalendarList extends Component<CalendarListProps, State> {
           // @ts-expect-error
           initialListSize={pastScrollRange + futureScrollRange + 1} // ListView deprecated
           data={this.state.rows}
+          initialNumToRender={31}
           renderItem={this.renderItem}
           getItemLayout={this.getItemLayout}
           onViewableItemsChanged={this.onViewableItemsChanged}
