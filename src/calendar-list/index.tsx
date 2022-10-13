@@ -102,6 +102,8 @@ class CalendarList extends Component<CalendarListProps, State> {
     nestedScrollEnabled: PropTypes.bool,
     /** Set an initial number of row to render in calendar list */
     initialNumToRender: PropTypes.number,
+    /** Set an windown size to render in calendar list */
+    windowSize: PropTypes.number || undefined,
   };
 
   static defaultProps = {
@@ -352,6 +354,7 @@ class CalendarList extends Component<CalendarListProps, State> {
           initialListSize={pastScrollRange + futureScrollRange + 1} // ListView deprecated
           data={this.state.rows}
           initialNumToRender={this.props.initialNumToRender}
+          windowSize={this.props.windowSize}
           renderItem={this.renderItem}
           getItemLayout={this.getItemLayout}
           onViewableItemsChanged={this.onViewableItemsChanged}
