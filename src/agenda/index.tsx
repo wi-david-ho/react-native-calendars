@@ -49,6 +49,10 @@ export type AgendaProps = CalendarListProps & ReservationListProps & {
   hideKnob?: boolean;
   /** Whether the knob should always be visible (when hideKnob = false) */
   showClosingKnob?: boolean;
+  /** Set an initial number of row to render in calendar list */
+  initialCalendarListNumToRender?: number;
+  /** Set an initial numnber of row to render in reservation list */
+  initialReservationListNumToRender?: number;
 }
 
 type State = {
@@ -81,7 +85,11 @@ export default class Agenda extends Component<AgendaProps, State> {
     renderKnob: PropTypes.func,
     selected: PropTypes.any, //TODO: Should be renamed 'selectedDay' and inherited from ReservationList
     hideKnob: PropTypes.bool,
-    showClosingKnob: PropTypes.bool
+    showClosingKnob: PropTypes.bool,
+    /** Set an initial number of row to render in calendar list */
+    initialCalendarListNumToRender: PropTypes.number,
+    /** Set an initial numnber of row to render in reservation list */
+    initialReservationListNumToRender: PropTypes.number,
   };
 
   private style: {[key: string]: ViewStyle};
@@ -334,6 +342,7 @@ export default class Agenda extends Component<AgendaProps, State> {
       <ReservationList
         {...reservationListProps}
         ref={this.list}
+        initialNumToRender={this.props.initialReservationListNumToRender}
         selectedDay={this.state.selectedDay}
         topDay={this.state.topDay}
         onDayChange={this.onDayChange}
@@ -350,6 +359,7 @@ export default class Agenda extends Component<AgendaProps, State> {
       <CalendarList
         {...calendarListProps}
         ref={this.calendar}
+        initialNumToRender={this.props.initialCalendarListNumToRender}
         current={getCalendarDateString(this.currentMonth.toString())}
         markedDates={this.generateMarkings(this.state.selectedDay, markedDates, items)}
         calendarWidth={this.viewWidth}

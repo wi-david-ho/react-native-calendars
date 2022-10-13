@@ -46,10 +46,8 @@ export type ReservationListProps = ReservationProps & {
   onRefresh?: () => void;
   /** Extractor for underlying FlatList. Ensure that this is unique per item, or else scrolling may have duplicated and / or missing items.  */
   reservationsKeyExtractor?: (item: DayAgenda, index: number) => string;
-  /** Set an initial number of row to render in calendar list */
-  reservationsInitialNumToRender?: number;
-  /** Set an windown size to render in calendar list */
-  reservationsWindowSize?: number;
+  /** Set an initial number of row to render in reservation list */
+  initialNumToRender?: number;
 };
 
 interface DayAgenda {
@@ -83,8 +81,8 @@ class ReservationList extends Component<ReservationListProps, State> {
     refreshing: PropTypes.bool,
     onRefresh: PropTypes.func,
     reservationsKeyExtractor: PropTypes.func,
-    reservationsInitialNumToRender: PropTypes.number,
-    reservationsWindowSize: PropTypes.number || undefined,
+    /** Set an initial number of row to render in reservation list */
+    initialNumToRender: PropTypes.number,
   };
   
   static defaultProps = {
@@ -285,8 +283,7 @@ class ReservationList extends Component<ReservationListProps, State> {
       <FlatList
         ref={this.list}
         style={style}
-        initialNumToRender={this.props.reservationsInitialNumToRender}
-        windowSize={this.props.reservationsWindowSize}
+        initialNumToRender={this.props.initialNumToRender}
         contentContainerStyle={this.style.content}
         data={this.state.reservations}
         renderItem={this.renderRow}
