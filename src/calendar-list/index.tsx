@@ -99,7 +99,9 @@ class CalendarList extends Component<CalendarListProps, State> {
     /** Called once when the scroll position gets within onEndReachedThreshold */
     onEndReached: PropTypes.func,
     /** Enables nested scrolling for Android API level 21+ */
-    nestedScrollEnabled: PropTypes.bool
+    nestedScrollEnabled: PropTypes.bool,
+    /** Set an initial number of row to render in calendar list */
+    initialNumToRender: PropTypes.number,
   };
 
   static defaultProps = {
@@ -349,7 +351,7 @@ class CalendarList extends Component<CalendarListProps, State> {
           // @ts-expect-error
           initialListSize={pastScrollRange + futureScrollRange + 1} // ListView deprecated
           data={this.state.rows}
-          initialNumToRender={31}
+          initialNumToRender={this.props.initialNumToRender}
           renderItem={this.renderItem}
           getItemLayout={this.getItemLayout}
           onViewableItemsChanged={this.onViewableItemsChanged}
