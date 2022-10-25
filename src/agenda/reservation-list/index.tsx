@@ -7,7 +7,7 @@ import {ActivityIndicator, View, FlatList, StyleProp, ViewStyle, TextStyle, Nati
 
 import {extractComponentProps} from '../../componentUpdater';
 import {sameDate} from '../../dateutils';
-import {toMarkingFormat} from '../../interface';
+import {parseDate, toMarkingFormat} from '../../interface';
 import styleConstructor from './style';
 import Reservation, {ReservationProps} from './reservation';
 import {AgendaEntry, AgendaSchedule} from '../../types';
@@ -112,7 +112,7 @@ class ReservationList extends Component<ReservationListProps, State> {
   }
 
   componentDidMount() {
-    this.updateDataSource(this.getReservations(this.props).reservations);
+    this.updateDataSource(this.getReservations(this.props).reservations, () => {});
   }
 
   componentDidUpdate(prevProps: ReservationListProps) {
@@ -127,25 +127,33 @@ class ReservationList extends Component<ReservationListProps, State> {
     }
   }
 
-  updateDataSource(reservations: DayAgenda[]) {
-    this.setState({reservations});
+  updateDataSource(reservations: DayAgenda[], callback: any) {
+    this.setState({reservations}, () => {
+      callback();
+    });
   }
 
   updateReservations(props: ReservationListProps) {
     const {selectedDay} = props;
     const reservations = this.getReservations(props);
-    
-    if (this.list && !sameDate(selectedDay, this.selectedDay)) {
-      let scrollPosition = 0;
-      for (let i = 0; i < reservations.scrollPosition; i++) {
-        scrollPosition += this.heights[i] || 0;
-      }
-      this.scrollOver = false;
-      this.list?.current?.scrollToOffset({offset: scrollPosition, animated: true});
-    }
-
     this.selectedDay = selectedDay;
-    this.updateDataSource(reservations.reservations);
+    this.updateDataSource(reservations.reservations, () => {
+      if (this.list) {
+        // need to wait for heights to update
+        setTimeout(
+          () => {
+            let scrollPosition = 0;
+            for (let i = 0; i < reservations.scrollPosition; i++) {
+              scrollPosition += this.heights[i] || 0;
+            }
+            this.scrollOver = false;
+
+            this.list?.current?.scrollToOffset({offset: scrollPosition, animated: false});
+          },
+          this.heights.length == 0 ? 1000 : 0
+        );
+      }
+    });
   }
 
   getReservationsForDay(iterator: XDate, props: ReservationListProps) {
@@ -178,17 +186,12 @@ class ReservationList extends Component<ReservationListProps, State> {
     }
 
     let reservations: DayAgenda[] = [];
-    if (this.state.reservations && this.state.reservations.length) {
-      const iterator = this.state.reservations[0].date?.clone();
+    if (true) {
+      const iterator = parseDate(Object.keys(props.items)[0] + 'T00:00:00.000Z');
       if (iterator) {
         while (iterator.getTime() < selectedDay.getTime()) {
           const res = this.getReservationsForDay(iterator, props);
-          if (!res) {
-            reservations = [];
-            break;
-          } else {
-            reservations = reservations.concat(res);
-          }
+          reservations = reservations.concat(res);
           iterator.addDays(1);
         }
       }
@@ -204,7 +207,7 @@ class ReservationList extends Component<ReservationListProps, State> {
       }
       iterator.addDays(1);
     } else {
-      for (let i = 0; i < 31; i++) {
+      for (let i = 0; i < Object.keys(props.items).length; i++) {
         const res = this.getReservationsForDay(iterator, props);
 
         if (res) {
@@ -271,14 +274,6 @@ class ReservationList extends Component<ReservationListProps, State> {
 
   render() {
     const {items, selectedDay, theme, style} = this.props;
-    
-    if (!items || selectedDay && !items[toMarkingFormat(selectedDay)]) {
-      if (isFunction(this.props.renderEmptyData)) {
-        return this.props.renderEmptyData?.();
-      }
-      return <ActivityIndicator style={this.style.indicator} color={theme?.indicatorColor}/>;
-    }
-
     return (
       <FlatList
         ref={this.list}
