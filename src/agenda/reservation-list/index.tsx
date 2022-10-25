@@ -136,34 +136,23 @@ class ReservationList extends Component<ReservationListProps, State> {
     const {selectedDay} = props;
     const reservations = this.getReservations(props);
     const selectDayString = selectedDay?.toString("yyyy-MM-dd");
-    const selectMonthString = selectedDay?.toString("yyyy-MM");
-    const currentDayString = this.selectedDay?.toString("yyyy-MM-dd");
-    const currentMonthString = this.selectedDay?.toString("yyyy-MM");
     const todayString = new XDate().toString("yyyy-MM-dd");
-    if ((selectDayString === todayString && currentDayString != todayString)) {
-      this.renderCount = 4;
-    }
-    if (selectMonthString != currentMonthString) {
-      this.renderCount = -4;
-    }
-    if (this.renderCount < 4) {
+    const firstDayOfSelectDate = new XDate(new XDate(selectDayString || "").getFullYear(), new XDate(selectDayString || "").getMonth(), 1);
+    if ((this.renderCount < 1 && !sameDate(selectedDay, this.selectedDay))) {
       this.selectedDay = selectedDay;
       if (this.list) {
-        setTimeout(
-        () => {
+        setTimeout(() => {
           let scrollPosition = 0;
           for (let i = 0; i < reservations.scrollPosition; i++) {
             scrollPosition += this.heights[i] || 0;
           }
           this.scrollOver = false;
           this.list?.current?.scrollToOffset({offset: scrollPosition, animated: false});
-          },
-            this.heights.length == 0 ? 1000 : 0
-          );
-      }  
-      this.renderCount += 1;
+        }, this.heights.length == 0 ? 1000 : 0);
+      }
+      this.renderCount = 1;
     } else {
-      if (this.list && !sameDate(selectedDay, this.selectedDay)) {
+      if (this.list && (!sameDate(selectedDay, this.selectedDay) || sameDate(selectedDay, firstDayOfSelectDate) || selectDayString === todayString)) {
         let scrollPosition = 0;
         for (let i = 0; i < reservations.scrollPosition; i++) {
           scrollPosition += this.heights[i] || 0;
