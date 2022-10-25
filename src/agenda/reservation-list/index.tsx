@@ -1,9 +1,8 @@
-import isFunction from 'lodash/isFunction';
 import PropTypes from 'prop-types';
 import XDate from 'xdate';
 
 import React, {Component} from 'react';
-import {ActivityIndicator, View, FlatList, StyleProp, ViewStyle, TextStyle, NativeSyntheticEvent, NativeScrollEvent, LayoutChangeEvent} from 'react-native';
+import {View, FlatList, StyleProp, ViewStyle, TextStyle, NativeSyntheticEvent, NativeScrollEvent, LayoutChangeEvent} from 'react-native';
 
 import {extractComponentProps} from '../../componentUpdater';
 import {sameDate} from '../../dateutils';
@@ -136,11 +135,11 @@ class ReservationList extends Component<ReservationListProps, State> {
   updateReservations(props: ReservationListProps) {
     const {selectedDay} = props;
     const reservations = this.getReservations(props);
-    const selectDayString = selectedDay.toString("yyyy-MM-dd");
-    const selectMonthString = selectedDay.toString("yyyy-MM");
-    const currentDayString = this.selectedDay.toString("yyyy-MM-dd");
-    const currentMonthString = this.selectedDay.toString("yyyy-MM");
-    const todayString = XDate().toString("yyyy-MM-dd");
+    const selectDayString = selectedDay?.toString("yyyy-MM-dd");
+    const selectMonthString = selectedDay?.toString("yyyy-MM");
+    const currentDayString = this.selectedDay?.toString("yyyy-MM-dd");
+    const currentMonthString = this.selectedDay?.toString("yyyy-MM");
+    const todayString = new XDate().toString("yyyy-MM-dd");
     if ((selectDayString === todayString && currentDayString != todayString)) {
       this.renderCount = 4;
     }
@@ -170,7 +169,7 @@ class ReservationList extends Component<ReservationListProps, State> {
           scrollPosition += this.heights[i] || 0;
         }
         this.scrollOver = false;
-        this.list?.current?.scrollToOffset({ offset: scrollPosition, animated: true });
+        this.list?.current?.scrollToOffset({offset: scrollPosition, animated: true});
       }
       this.selectedDay = selectedDay;
     }
