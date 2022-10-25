@@ -206,12 +206,13 @@ class ReservationList extends Component<ReservationListProps, State> {
     }
 
     let reservations: DayAgenda[] = [];
-    if (true) {
+    const isIterator = true;
+    if (isIterator) {
       const iterator = parseDate(Object.keys(props.items)[0] + 'T00:00:00.000Z');
       if (iterator) {
         while (iterator.getTime() < selectedDay.getTime()) {
           const res = this.getReservationsForDay(iterator, props);
-          reservations = reservations.concat(res);
+          reservations = reservations.concat(res || []);
           iterator.addDays(1);
         }
       }
