@@ -94,6 +94,7 @@ class ReservationList extends Component<ReservationListProps, State> {
   private heights: number[];
   private selectedDay?: XDate;
   private scrollOver: boolean;
+  private renderCount: number;
   private list: React.RefObject<FlatList> = React.createRef();
 
 
@@ -109,6 +110,7 @@ class ReservationList extends Component<ReservationListProps, State> {
     this.heights = [];
     this.selectedDay = props.selectedDay;
     this.scrollOver = true;
+    this.renderCount = 0;
   }
 
   componentDidMount() {
@@ -127,33 +129,52 @@ class ReservationList extends Component<ReservationListProps, State> {
     }
   }
 
-  updateDataSource(reservations: DayAgenda[], callback: any) {
-    this.setState({reservations}, () => {
-      callback();
-    });
+  updateDataSource(reservations: DayAgenda[]) {
+    this.setState({reservations});
   }
 
   updateReservations(props: ReservationListProps) {
     const {selectedDay} = props;
     const reservations = this.getReservations(props);
-    this.selectedDay = selectedDay;
-    this.updateDataSource(reservations.reservations, () => {
+    const selectDayString = selectedDay.toString("yyyy-MM-dd");
+    const selectMonthString = selectedDay.toString("yyyy-MM");
+    const currentDayString = this.selectedDay.toString("yyyy-MM-dd");
+    const currentMonthString = this.selectedDay.toString("yyyy-MM");
+    const todayString = XDate().toString("yyyy-MM-dd");
+    if ((selectDayString === todayString && currentDayString != todayString)) {
+      this.renderCount = 4;
+    }
+    if (selectMonthString != currentMonthString) {
+      this.renderCount = -4;
+    }
+    if (this.renderCount < 4) {
+      this.selectedDay = selectedDay;
       if (this.list) {
-        // need to wait for heights to update
         setTimeout(
-          () => {
-            let scrollPosition = 0;
-            for (let i = 0; i < reservations.scrollPosition; i++) {
-              scrollPosition += this.heights[i] || 0;
-            }
-            this.scrollOver = false;
-
-            this.list?.current?.scrollToOffset({offset: scrollPosition, animated: false});
+        () => {
+          let scrollPosition = 0;
+          for (let i = 0; i < reservations.scrollPosition; i++) {
+            scrollPosition += this.heights[i] || 0;
+          }
+          this.scrollOver = false;
+          this.list?.current?.scrollToOffset({offset: scrollPosition, animated: false});
           },
-          this.heights.length == 0 ? 1000 : 0
-        );
+            this.heights.length == 0 ? 1000 : 0
+          );
+        this.renderCount += 1;
       }
-    });
+    } else {
+      if (this.list && !sameDate(selectedDay, this.selectedDay)) {
+        let scrollPosition = 0;
+        for (let i = 0; i < reservations.scrollPosition; i++) {
+          scrollPosition += this.heights[i] || 0;
+        }
+        this.scrollOver = false;
+        this.list?.current?.scrollToOffset({ offset: scrollPosition, animated: true });
+      }
+      this.selectedDay = selectedDay;
+    }
+    this.updateDataSource(reservations.reservations);
   }
 
   getReservationsForDay(iterator: XDate, props: ReservationListProps) {
