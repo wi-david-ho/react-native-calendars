@@ -293,7 +293,7 @@ class ReservationList extends Component<ReservationListProps, State> {
   }
 
   render() {
-    const {items, selectedDay, theme, style} = this.props;
+    const {style} = this.props;
     return (
       <FlatList
         ref={this.list}
