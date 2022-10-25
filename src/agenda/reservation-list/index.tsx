@@ -114,7 +114,7 @@ class ReservationList extends Component<ReservationListProps, State> {
   }
 
   componentDidMount() {
-    this.updateDataSource(this.getReservations(this.props).reservations, () => {});
+    this.updateDataSource(this.getReservations(this.props).reservations);
   }
 
   componentDidUpdate(prevProps: ReservationListProps) {
@@ -161,8 +161,8 @@ class ReservationList extends Component<ReservationListProps, State> {
           },
             this.heights.length == 0 ? 1000 : 0
           );
-        this.renderCount += 1;
-      }
+      }  
+      this.renderCount += 1;
     } else {
       if (this.list && !sameDate(selectedDay, this.selectedDay)) {
         let scrollPosition = 0;
