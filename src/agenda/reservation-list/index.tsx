@@ -135,33 +135,37 @@ class ReservationList extends Component<ReservationListProps, State> {
   updateReservations(props: ReservationListProps) {
     const {selectedDay} = props;
     const reservations = this.getReservations(props);
+    const selectDayString = selectedDay?.toString("yyyy-MM-dd");
+    const todayString = new XDate().toString("yyyy-MM-dd");
+    const firstDayOfSelectDate = new XDate((selectedDay || new XDate()).getFullYear(), (selectedDay || new XDate()).getMonth(), 1);
+    const isSpecial = !sameDate(selectedDay, this.selectedDay) || sameDate(selectedDay, firstDayOfSelectDate) || selectDayString === todayString;
     if (this.list) {
-      if ((this.renderCount < 1)) {
+      if (this.renderCount < 1) {
+        if (!sameDate(selectedDay, this.selectedDay)) {
           this.renderCount = 1;
-          if (!sameDate(selectedDay, this.selectedDay)) {
-            setTimeout(() => {
-              let scrollPosition = 0;
-              for (let i = 0; i < reservations.scrollPosition; i++) {
-                scrollPosition += this.heights[i] || 0;
-              }
-              this.scrollOver = false;
-              this.list?.current?.scrollToOffset({offset: scrollPosition, animated: false});
-            }, this.heights.length == 0 ? 1000 : 0);
-          } else {
-            let scrollPosition = 0;
-            for (let i = 0; i < reservations.scrollPosition; i++) {
-              scrollPosition += this.heights[i] || 0;
-            }
-            this.scrollOver = false;
-            this.list?.current?.scrollToOffset({offset: scrollPosition, animated: true});
-          }
-      } else {
           let scrollPosition = 0;
           for (let i = 0; i < reservations.scrollPosition; i++) {
             scrollPosition += this.heights[i] || 0;
           }
           this.scrollOver = false;
           this.list?.current?.scrollToOffset({offset: scrollPosition, animated: true});
+        }
+        setTimeout(() => {
+          this.renderCount = 1;
+          let scrollPosition = 0;
+          for (let i = 0; i < reservations.scrollPosition; i++) {
+            scrollPosition += this.heights[i] || 0;
+          }
+          this.scrollOver = false;
+          this.list?.current?.scrollToOffset({offset: scrollPosition, animated: false});
+        }, this.heights.length == 0 ? 1000 : 0);
+      } else if (isSpecial) {
+        let scrollPosition = 0;
+        for (let i = 0; i < reservations.scrollPosition; i++) {
+          scrollPosition += this.heights[i] || 0;
+        }
+        this.scrollOver = false;
+        this.list?.current?.scrollToOffset({offset: scrollPosition, animated: true});
       }
       this.selectedDay = selectedDay;
       this.updateDataSource(reservations.reservations);
