@@ -138,7 +138,7 @@ class ReservationList extends Component<ReservationListProps, State> {
     const selectDayString = selectedDay?.toString("yyyy-MM-dd");
     const todayString = new XDate().toString("yyyy-MM-dd");
     const firstDayOfSelectDate = new XDate((selectedDay || new XDate()).getFullYear(), (selectedDay || new XDate()).getMonth(), 1);
-    const isSpecial = !sameDate(selectedDay, this.selectedDay) || sameDate(selectedDay, firstDayOfSelectDate) || selectDayString === todayString;
+    const isSpecial = !sameDate(selectedDay, this.selectedDay) || (!this.scrollOver && (sameDate(selectedDay, firstDayOfSelectDate) || selectDayString === todayString));
     if (this.list) {
       if (this.renderCount < 1) {
         if (!sameDate(selectedDay, this.selectedDay)) {
