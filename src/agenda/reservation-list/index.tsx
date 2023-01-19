@@ -150,15 +150,20 @@ class ReservationList extends Component<ReservationListProps, State> {
           this.scrollOver = false;
           this.list?.current?.scrollToOffset({offset: scrollPosition, animated: true});
         }
-        setTimeout(() => {
+        if (!this.scrollOver) {
+          setTimeout(() => {
+            this.renderCount = 1;
+            let scrollPosition = 0;
+            for (let i = 0; i < reservations.scrollPosition; i++) {
+              scrollPosition += this.heights[i] || 0;
+            }
+            this.scrollOver = false;
+            this.list?.current?.scrollToOffset({offset: scrollPosition, animated: false});
+          }, this.heights.length == 0 ? 1000 : 0);
+        } else {
           this.renderCount = 1;
-          let scrollPosition = 0;
-          for (let i = 0; i < reservations.scrollPosition; i++) {
-            scrollPosition += this.heights[i] || 0;
-          }
           this.scrollOver = false;
-          this.list?.current?.scrollToOffset({offset: scrollPosition, animated: false});
-        }, this.heights.length == 0 ? 1000 : 0);
+        }
       } else if (isSpecial) {
         let scrollPosition = 0;
         for (let i = 0; i < reservations.scrollPosition; i++) {
