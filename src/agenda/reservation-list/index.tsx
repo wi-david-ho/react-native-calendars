@@ -135,10 +135,7 @@ class ReservationList extends Component<ReservationListProps, State> {
   updateReservations(props: ReservationListProps) {
     const {selectedDay} = props;
     const reservations = this.getReservations(props);
-    const selectDayString = selectedDay?.toString("yyyy-MM-dd");
-    const todayString = new XDate().toString("yyyy-MM-dd");
-    const firstDayOfSelectDate = new XDate((selectedDay || new XDate()).getFullYear(), (selectedDay || new XDate()).getMonth(), 1);
-    const isSpecial = !sameDate(selectedDay, this.selectedDay) || (!this.scrollOver && (sameDate(selectedDay, firstDayOfSelectDate) || sameDate(selectedDay, this.selectedDay) || selectDayString === todayString));
+    const isScroll = !sameDate(selectedDay, this.selectedDay) || (!this.scrollOver && sameDate(selectedDay, this.selectedDay));
     if (this.list) {
       if (this.renderCount < 1) {
         if (!sameDate(selectedDay, this.selectedDay)) {
@@ -164,7 +161,7 @@ class ReservationList extends Component<ReservationListProps, State> {
           this.renderCount = 1;
           this.scrollOver = false;
         }
-      } else if (isSpecial) {
+      } else if (isScroll) {
         let scrollPosition = 0;
         for (let i = 0; i < reservations.scrollPosition; i++) {
           scrollPosition += this.heights[i] || 0;
